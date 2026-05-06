@@ -26,14 +26,35 @@ tests/
 go test ./... -race -count=1
 ```
 
-Coverage:
+- `./...` — runs tests in all packages recursively (domain, service, repository, http, integration, concurrency, cmd)
+- `-race` — enables Go's race detector; catches concurrent memory access bugs at runtime (relevant here since the project has a 50-goroutine concurrency test)
+- `-count=1` — disables test result caching, forces every test to actually re-run instead of returning a cached pass
+
+### Coverage
 
 ```bash
 go test ./... -coverpkg=./internal/...,./cmd/... -coverprofile=cover.out
 go tool cover -func=cover.out | tail
 ```
 
-## Run the API
+- `-coverpkg=./internal/...,./cmd/...` — measures coverage across these packages even when the test file lives in a different package (e.g. `tests/integration` calling into `internal/service`). Without this, only the package containing the test file gets measured.
+- `-coverprofile=cover.out` — writes the raw coverage data to `cover.out`
+- `go tool cover -func=cover.out | tail` — prints per-function coverage percentages; `| tail` shows just the last few lines, which includes the total coverage summary at the bottom
+
+## Build and run the API
+
+### Option 1: Build then run
+
+```bash
+go build -o billing-engine ./cmd/api
+./billing-engine --db /tmp/billing.db --addr :8080
+```
+
+- `go build -o billing-engine ./cmd/api` — compiles the binary and outputs it as `billing-engine` in the current directory
+- `--db` — path to the SQLite database file (created automatically if it does not exist)
+- `--addr` — address and port the HTTP server listens on
+
+### Option 2: Build and run in one step
 
 ```bash
 go run ./cmd/api --db /tmp/billing.db --addr :8080
@@ -107,17 +128,3 @@ curl -s "localhost:8080/v1/loans/$LOAN/delinquency?as_of=2026-06-01"
 | 10, 11 | domain | `TestIsDelinquent` (`before any due`), `TestGenerateSchedule_FutureStart` |
 | 14 | concurrency | `TestRace_OutstandingNeverIncreases` |
 | 16 | service | `TestService_MakePayment_LoanClosed` (sequential proxy of the post-close race; SAVE inside a fresh tx re-reads status) |
-
-## TDD record
-
-The build was driven test-first, layer by layer:
-
-1. Domain (pure, no DB) — schedule, loan aggregate, payment.
-2. Repository (sqlite tx, loan repo, payment repo).
-3. Service (orchestration + idempotency).
-4. HTTP (chi router + handlers + middleware).
-5. Integration + concurrency suites.
-6. `cmd/api` wiring + smoke test.
-
-Each layer added failing tests first, then minimal implementation to turn
-them green; only then was the next layer started.
