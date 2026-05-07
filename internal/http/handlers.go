@@ -14,7 +14,7 @@ import (
 
 const dateFmt = "2006-01-02"
 
-// Handler is the HTTP API surface; see PRD §5.1.
+// Handler is the HTTP API surface; see PRD section 5.1.
 type Handler struct {
 	svc *service.BillingService
 }

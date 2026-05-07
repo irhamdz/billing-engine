@@ -1,4 +1,4 @@
-// Package service contains use-case orchestration. PRD §8 / §10.1.
+// Package service contains use-case orchestration. PRD section 8 / section 10.1.
 //
 // The service layer is responsible for:
 //   - opening BEGIN IMMEDIATE transactions for the write path
@@ -82,13 +82,13 @@ func (s *BillingService) CreateLoan(ctx context.Context, req CreateLoanRequest) 
 	return loan, nil
 }
 
-// MakePayment processes a single payment with idempotency. PRD §8.1.
+// MakePayment processes a single payment with idempotency. PRD section 8.1.
 func (s *BillingService) MakePayment(ctx context.Context, loanID uuid.UUID, amount int64, idempotencyKey string) (*domain.Payment, error) {
 	if idempotencyKey == "" {
 		return nil, fmt.Errorf("%w: idempotency key required", domain.ErrInvalidAmount)
 	}
 
-	// Step 3 (PRD §8.1): pre-tx idempotency check.
+	// Step 3 (PRD section 8.1): pre-tx idempotency check.
 	if existing, err := s.payments.GetByIdempotencyKey(ctx, loanID, idempotencyKey); err == nil {
 		if existing.Amount != amount {
 			return nil, domain.ErrIdempotencyConflict
@@ -138,7 +138,7 @@ func (s *BillingService) MakePayment(ctx context.Context, loanID uuid.UUID, amou
 	return pmt, nil
 }
 
-// GetOutstanding implements PRD §6.4 — it loads the loan and reuses the
+// GetOutstanding implements PRD section 6.4 — it loads the loan and reuses the
 // aggregate's accessor. The performance-oriented single-aggregate-query form
 // is implemented here as well for cases where loading the full schedule
 // would be wasteful.
@@ -185,7 +185,7 @@ func (s *BillingService) GetPaymentHistory(ctx context.Context, loanID uuid.UUID
 	return s.payments.ListByLoan(ctx, loanID)
 }
 
-// LoanSummary is the aggregated borrower-facing view. PRD §8.2.
+// LoanSummary is the aggregated borrower-facing view. PRD section 8.2.
 type LoanSummary struct {
 	Loan            *domain.Loan
 	Outstanding     int64

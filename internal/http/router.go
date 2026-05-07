@@ -10,7 +10,7 @@ import (
 	"github.com/irhamdz/billing-engine/internal/service"
 )
 
-// NewRouter wires the chi router with middleware and the handler set. PRD §5.
+// NewRouter wires the chi router with middleware and the handler set. PRD section 5.
 func NewRouter(svc *service.BillingService) http.Handler {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	return NewRouterWithLogger(svc, logger)

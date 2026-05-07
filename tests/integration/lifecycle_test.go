@@ -89,7 +89,7 @@ func mustExtractLoanID(t *testing.T, resp *http.Response) string {
 	return rest[:j]
 }
 
-// PRD §9.2 — full lifecycle.
+// PRD section 9.2 — full lifecycle.
 func TestE2E_FullLifecycle(t *testing.T) {
 	srv := newServer(t)
 	resp := post(t, srv, "/v1/loans", createPayload, map[string]string{"Idempotency-Key": "init"})
@@ -120,7 +120,7 @@ func TestE2E_FullLifecycle(t *testing.T) {
 	}
 }
 
-// PRD §7 edge case 3 — catch-up clears delinquency at the right moment.
+// PRD section 7 edge case 3 — catch-up clears delinquency at the right moment.
 func TestE2E_CatchUp(t *testing.T) {
 	srv := newServer(t)
 	resp := post(t, srv, "/v1/loans", createPayload, map[string]string{"Idempotency-Key": "init"})
@@ -161,7 +161,7 @@ func TestE2E_CatchUp(t *testing.T) {
 	}
 }
 
-// PRD §9.2 — replay attack: same key 100×, exactly one payment row.
+// PRD section 9.2 — replay attack: same key 100×, exactly one payment row.
 func TestE2E_ReplayAttack(t *testing.T) {
 	srv := newServer(t)
 	resp := post(t, srv, "/v1/loans", createPayload, map[string]string{"Idempotency-Key": "init"})

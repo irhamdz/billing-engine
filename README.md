@@ -85,7 +85,7 @@ Versioned API (under `/v1/`):
 | POST   | `/v1/loans/{loan_id}/payments`          |
 | GET    | `/v1/loans/{loan_id}/payments`          |
 
-POST requests should carry an `Idempotency-Key` header (PRD §5.2).
+POST requests should carry an `Idempotency-Key` header (PRD section 5.2).
 
 Meta routes (intentionally outside `/v1/` — not part of the versioned contract):
 
@@ -145,7 +145,7 @@ curl -s "localhost:8080/v1/loans/$LOAN/delinquency?as_of=2026-06-01"
 
 ## Architecture notes
 
-- **Concurrency safety (PRD §6.1).** Write path opens `BEGIN IMMEDIATE`
+- **Concurrency safety (PRD section 6.1).** Write path opens `BEGIN IMMEDIATE`
   on a pinned connection so the SQLite reserved write lock is held from the
   start of the transaction, eliminating the "two readers both decide to write"
   race. WAL mode lets readers proceed without blocking. `busy_timeout=5000ms`
@@ -158,9 +158,9 @@ curl -s "localhost:8080/v1/loans/$LOAN/delinquency?as_of=2026-06-01"
   service skips persistence (no version bump on replay).
 - **Domain invariants** are re-checked after every aggregate mutation (see
   `internal/domain/loan.go`). Invariant violations bubble up as 500s and are
-  logged loudly per PRD §5.3.
+  logged loudly per PRD section 5.3.
 
-## Edge cases (PRD §7) — explicit test coverage
+## Edge cases (PRD section 7) — explicit test coverage
 
 | # | Where | Test |
 |---|-------|------|

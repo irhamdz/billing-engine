@@ -134,7 +134,7 @@ func TestIsDelinquent(t *testing.T) {
 	}
 }
 
-// PRD §7 edge case 3 — partial catch-up clears delinquency at the right moment.
+// PRD section 7 edge case 3 — partial catch-up clears delinquency at the right moment.
 func TestIsDelinquent_CatchUpScenario(t *testing.T) {
 	loc := mustJakarta(t)
 	start := time.Date(2026, 1, 1, 0, 0, 0, 0, loc)
@@ -283,7 +283,7 @@ func TestMakePayment_IdempotentConflict(t *testing.T) {
 	}
 }
 
-// PRD §3.2 — loan with rounding remainder; final amount must be exact.
+// PRD section 3.2 — loan with rounding remainder; final amount must be exact.
 func TestMakePayment_RoundingFinalInstallment(t *testing.T) {
 	loc := mustJakarta(t)
 	start := time.Date(2026, 1, 1, 0, 0, 0, 0, loc)

@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// LoanStatus is the lifecycle state of a loan. PRD §3.5 — terminal CLOSED.
+// LoanStatus is the lifecycle state of a loan. PRD section 3.5 — terminal CLOSED.
 type LoanStatus string
 
 const (
@@ -15,7 +15,7 @@ const (
 	LoanClosed LoanStatus = "CLOSED"
 )
 
-// Loan is the aggregate root for all billing concerns. PRD §4.2.
+// Loan is the aggregate root for all billing concerns. PRD section 4.2.
 //
 // All mutations to the schedule and payments must flow through Loan methods so
 // invariants are enforced in one place.
@@ -39,7 +39,7 @@ type Loan struct {
 }
 
 // NewLoan constructs a Loan and its schedule atomically.
-// PRD §3.1 / §3.2 / §4.2.
+// PRD section 3.1 / section 3.2 / section 4.2.
 func NewLoan(borrowerID uuid.UUID, principal int64, rate float64, term int, start time.Time) (*Loan, error) {
 	if borrowerID == uuid.Nil {
 		return nil, fmt.Errorf("%w: borrower_id required", ErrInvalidLoanInput)
@@ -72,7 +72,7 @@ func NewLoan(borrowerID uuid.UUID, principal int64, rate float64, term int, star
 }
 
 // GetOutstanding returns total_amount − Σpayments. Closed loans report 0
-// (PRD §3.5, edge case 9). The formula returns the same value by invariant.
+// (PRD section 3.5, edge case 9). The formula returns the same value by invariant.
 func (l *Loan) GetOutstanding() int64 {
 	if l.Status == LoanClosed {
 		return 0
@@ -85,7 +85,7 @@ func (l *Loan) GetOutstanding() int64 {
 }
 
 // IsDelinquent reports whether the borrower is delinquent on this loan as of
-// the given timestamp. PRD §3.4 — ≥ 2 consecutive PENDING installments past
+// the given timestamp. PRD section 3.4 — ≥ 2 consecutive PENDING installments past
 // their due date, scanning by week_number ascending from the oldest pending.
 func (l *Loan) IsDelinquent(asOf time.Time) bool {
 	consecutive := 0
@@ -114,7 +114,7 @@ func (l *Loan) IsDelinquent(asOf time.Time) bool {
 
 // MakePayment validates and applies a single payment to the oldest PENDING
 // installment. Returns the recorded Payment plus a flag indicating whether
-// this payment closed the loan. PRD §3.3 / §8.1.
+// this payment closed the loan. PRD section 3.3 / section 8.1.
 //
 // Idempotency rule: if a payment already exists for (loan, key) and the
 // amount matches, the existing record is returned and no state changes.
@@ -122,7 +122,7 @@ func (l *Loan) IsDelinquent(asOf time.Time) bool {
 //
 // This method is the single mutation entry point for the aggregate; the
 // service layer wraps the call in a DB transaction with optimistic version
-// check (PRD §6.1).
+// check (PRD section 6.1).
 func (l *Loan) MakePayment(amount int64, idempotencyKey string, now time.Time) (*Payment, bool, error) {
 	if existing := l.findPaymentByKey(idempotencyKey); existing != nil {
 		if existing.Amount != amount {
@@ -208,7 +208,7 @@ func (l *Loan) findPaymentByKey(key string) *Payment {
 }
 
 // checkInvariants is called after every state transition; surfaces bugs early.
-// PRD §4.2 — invariants enumerated.
+// PRD section 4.2 — invariants enumerated.
 func (l *Loan) checkInvariants() error {
 	expectedTotal := l.Principal + int64(float64(l.Principal)*l.AnnualInterestRate)
 	if l.TotalAmount != expectedTotal {

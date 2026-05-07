@@ -14,7 +14,7 @@ func mustJakarta(t *testing.T) *time.Location {
 	return loc
 }
 
-// PRD §3.2 — default product: 5,000,000 IDR × 10% × 50wk → weekly=110,000.
+// PRD section 3.2 — default product: 5,000,000 IDR × 10% × 50wk → weekly=110,000.
 func TestGenerateSchedule_DefaultProduct(t *testing.T) {
 	loc := mustJakarta(t)
 	start := time.Date(2026, 5, 6, 0, 0, 0, 0, loc)
@@ -51,7 +51,7 @@ func TestGenerateSchedule_DefaultProduct(t *testing.T) {
 	}
 }
 
-// PRD §3.2 — rounding remainder absorbed by final installment.
+// PRD section 3.2 — rounding remainder absorbed by final installment.
 func TestGenerateSchedule_RoundingRemainder(t *testing.T) {
 	loc := mustJakarta(t)
 	start := time.Date(2026, 1, 1, 0, 0, 0, 0, loc)

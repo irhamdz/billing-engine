@@ -1,5 +1,5 @@
 // Package sqlite is the concrete repository implementation backed by
-// modernc.org/sqlite (pure-Go, no CGo). PRD §6.1 / §10.5.
+// modernc.org/sqlite (pure-Go, no CGo). PRD section 6.1 / section 10.5.
 package sqlite
 
 import (
@@ -23,7 +23,7 @@ type DB struct {
 }
 
 // OpenDB opens (or creates) a sqlite database at path with the PRAGMAs
-// required by PRD §6.1 and runs the embedded init migration.
+// required by PRD section 6.1 and runs the embedded init migration.
 //
 // modernc.org/sqlite applies DSN-supplied `_pragma=...` parameters on every
 // connection checkout, which is what we need: foreign_keys, busy_timeout, and
@@ -66,7 +66,7 @@ func (d *DB) Close() error { return d.sqlDB.Close() }
 func (d *DB) Underlying() *sql.DB { return d.sqlDB }
 
 // BeginImmediate opens a write transaction with the SQLite reserved lock
-// acquired up front. PRD §6.1 — eliminates the "two readers both decide to
+// acquired up front. PRD section 6.1 — eliminates the "two readers both decide to
 // write" race.
 func (d *DB) BeginImmediate(ctx context.Context) (repository.Tx, error) {
 	// modernc.org/sqlite supports BEGIN IMMEDIATE via raw exec on a tx.

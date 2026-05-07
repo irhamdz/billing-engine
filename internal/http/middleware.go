@@ -76,7 +76,7 @@ func recoverer(logger *slog.Logger) func(http.Handler) http.Handler {
 	}
 }
 
-// accessLog emits one structured line per request. PRD §6.5.
+// accessLog emits one structured line per request. PRD section 6.5.
 func accessLog(logger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -16,7 +16,7 @@ const (
 )
 
 // Installment is a single weekly payment slot inside a Loan aggregate.
-// PRD §4.3 — must only be mutated through the parent Loan.
+// PRD section 4.3 — must only be mutated through the parent Loan.
 type Installment struct {
 	ID         uuid.UUID
 	LoanID     uuid.UUID
@@ -29,7 +29,7 @@ type Installment struct {
 }
 
 // IsOverdue reports whether the installment is PENDING and asOf is strictly past its DueDate.
-// PRD §4.3 / Edge case 10 — equality with due_date is NOT overdue.
+// PRD section 4.3 / Edge case 10 — equality with due_date is NOT overdue.
 func (it *Installment) IsOverdue(asOf time.Time) bool {
 	return it.Status == InstallmentPending && asOf.After(it.DueDate)
 }
@@ -47,7 +47,7 @@ func (it *Installment) markPaid(paymentID uuid.UUID, paidAt time.Time) error {
 }
 
 // GenerateSchedule produces the deterministic installment list for a loan.
-// PRD §3.2 — flat interest, weekly = floor(total/term), final installment
+// PRD section 3.2 — flat interest, weekly = floor(total/term), final installment
 // absorbs any rounding remainder so that Σamount == total.
 //
 // The function is pure: it does not assign installment IDs that depend on

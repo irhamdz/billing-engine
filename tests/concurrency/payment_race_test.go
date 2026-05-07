@@ -46,7 +46,7 @@ func newDefaultLoan(t *testing.T, svc *service.BillingService) uuid.UUID {
 	return loan.ID
 }
 
-// PRD §9.3 — 50 goroutines, each its own key.
+// PRD section 9.3 — 50 goroutines, each its own key.
 //
 // Expected outcome: exactly TermWeeks payments succeed, the rest fail with
 // ErrInvalidAmount (no pending) or ErrLoanClosed once the loan auto-closes.
@@ -93,7 +93,7 @@ func TestRace_FiftyGoroutines_DistinctKeys(t *testing.T) {
 	}
 }
 
-// PRD §9.3 — second concurrency test.
+// PRD section 9.3 — second concurrency test.
 //
 // 50 goroutines all using THE SAME key → exactly one payment is recorded;
 // the other 49 calls return the existing payment unchanged (idempotent
@@ -136,7 +136,7 @@ func TestRace_SameIdempotencyKey(t *testing.T) {
 	}
 }
 
-// PRD edge case 14 + §9.3 monotonic outstanding under concurrent reads.
+// PRD edge case 14 + section 9.3 monotonic outstanding under concurrent reads.
 func TestRace_OutstandingNeverIncreases(t *testing.T) {
 	svc := newSvc(t)
 	loanID := newDefaultLoan(t, svc)

@@ -90,7 +90,7 @@ type PaymentHistoryResponse struct {
 	Payments []PaymentResponse `json:"payments"`
 }
 
-// errorEnvelope is the consistent error body. PRD §5.3.
+// errorEnvelope is the consistent error body. PRD section 5.3.
 type errorEnvelope struct {
 	Error errorBody `json:"error"`
 }

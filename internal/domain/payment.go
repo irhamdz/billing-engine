@@ -7,7 +7,7 @@ import (
 )
 
 // Payment is an immutable record of a successful repayment event.
-// PRD §4.4 — append-only; no update/delete.
+// PRD section 4.4 — append-only; no update/delete.
 type Payment struct {
 	ID             uuid.UUID
 	LoanID         uuid.UUID

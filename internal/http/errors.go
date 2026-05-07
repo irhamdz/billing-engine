@@ -8,7 +8,7 @@ import (
 	"github.com/irhamdz/billing-engine/internal/domain"
 )
 
-// writeError maps a domain error to the §5.3 HTTP envelope.
+// writeError maps a domain error to the section 5.3 HTTP envelope.
 func writeError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "application/json")
 
