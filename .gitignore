@@ -32,5 +32,5 @@ go.work.sum
 # .vscode/
 
 # local db
-.db
-.sqlite
+*.db
+*.sqlite
