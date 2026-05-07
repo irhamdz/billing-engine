@@ -15,6 +15,7 @@ internal/
     sqlite/                       # modernc.org/sqlite implementation, BEGIN IMMEDIATE
       migrations/001_init.sql     # schema, embedded into the binary
   http/                           # chi router, handlers, middleware, DTOs, error envelope
+    swagger/                      # OpenAPI 3.0 spec + vendored Swagger UI assets, embedded
 tests/
   integration/                    # full lifecycle, catch-up, replay attack
   concurrency/                    # 50-goroutine race, same-key replay, snapshot reads
@@ -60,7 +61,19 @@ go build -o billing-engine ./cmd/api
 go run ./cmd/api --db /tmp/billing.db --addr :8080
 ```
 
-Endpoints (all under `/v1/`):
+## Open the Swagger UI
+
+After the server is running, open **<http://localhost:8080/docs>** in a browser
+for an interactive API explorer. The raw OpenAPI 3.0 spec is at
+**<http://localhost:8080/docs/openapi.yaml>**.
+
+The UI and spec are embedded into the binary (Swagger UI dist is vendored under
+`internal/http/swagger/ui/`), so the docs page works fully offline once the
+server is up.
+
+## Endpoints
+
+Versioned API (under `/v1/`):
 
 | Method | Path                                    |
 | ------ | --------------------------------------- |
@@ -74,7 +87,39 @@ Endpoints (all under `/v1/`):
 
 POST requests should carry an `Idempotency-Key` header (PRD §5.2).
 
-### Sample flow
+Meta routes (intentionally outside `/v1/` — not part of the versioned contract):
+
+| Method | Path                  | Purpose                       |
+| ------ | --------------------- | ----------------------------- |
+| GET    | `/docs`               | Interactive Swagger UI        |
+| GET    | `/docs/openapi.yaml`  | Raw OpenAPI 3.0 spec          |
+| GET    | `/healthz`            | Liveness probe (200 when up)  |
+
+## Sample flow (Swagger UI)
+
+The Swagger UI ships with example payloads pre-filled, so each "Try it out"
+form is one-click executable.
+
+1. Open **<http://localhost:8080/docs>**.
+2. Expand **`POST /v1/loans`** → click **Try it out** → the request body is
+   already populated (`principal: 5000000`, `term_weeks: 50`,
+   `start_date: 2026-05-06`). Set the `Idempotency-Key` header to `init` →
+   click **Execute**.
+   → 201 Created. Copy `loan_id` from the response body.
+3. Expand **`GET /v1/loans/{loan_id}/outstanding`** → click **Try it out** →
+   paste the `loan_id` → **Execute**.
+   → `{"loan_id":"…","outstanding":5500000}`.
+4. Expand **`POST /v1/loans/{loan_id}/payments`** → **Try it out** → paste
+   `loan_id`, set `Idempotency-Key: pay-1`, leave the body as `{"amount": 110000}` →
+   **Execute**.
+   → 201. Re-clicking **Execute** with the same key returns the same payment
+   (idempotent replay). Changing the amount and re-executing with the same key
+   returns 409 `IDEMPOTENCY_CONFLICT`.
+5. Expand **`GET /v1/loans/{loan_id}/delinquency`** → set `as_of=2026-06-01` →
+   **Execute**.
+   → `{"is_delinquent": true, …}` (two installments are overdue at that date).
+
+## Sample flow (curl)
 
 ```bash
 curl -sX POST localhost:8080/v1/loans \

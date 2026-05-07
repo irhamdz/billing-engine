@@ -37,6 +37,14 @@ func NewRouterWithLogger(svc *service.BillingService, logger *slog.Logger) http.
 		})
 	})
 
+	// Interactive API docs (Swagger UI) served from embedded assets. The
+	// explicit /docs/openapi.yaml registration must come before the {asset}
+	// wildcard so chi's tree picks the more specific route.
+	r.Get("/docs", serveDocsIndex)
+	r.Get("/docs/", serveDocsIndex)
+	r.Get("/docs/openapi.yaml", serveOpenAPISpec)
+	r.Get("/docs/{asset}", serveDocsAsset)
+
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
 	return r
 }
